@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1> Authentication</h1>
+
+    <div>
+        <input type="text" id="username" placeholder="Username">
+        <label for="username">Username</label>
+    </div>
+    <div>
+        <input type="password" id="password" placeholder="Password">
+        <label for="password">Password</label>
+    </div>
+
+    <button type="button" onclick="login()">Login</button>
+
+    <br>
+
+
+    <h2>--</h2>
+
+    <button onclick="logout()">Logoout</button>
+
+
+    <h2> -- </h2>
+
+    <button onclick="getrequest()">Check Status</button>
+
+    <h2> Filter courses / Get modules for a course </h2>
+
+    <button onclick="choosecourse()">Choose Course</button>
+
+    <h2> -- </h2>
+
+    <div>
+        <input type="text" id="module" placeholder="module">
+        <label for="module">module</label>
+    </div>
+    <button onclick="choosemodule()">Choose Module</button>
+
+    <script>
+        const url = "http://127.0.0.1:8000/"
+
+        function login() {
+
+            data = {
+                "username": document.getElementById("username").value,
+                "password": document.getElementById("password").value
+            }
+            let options = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify(data)
+            }
+
+            let fetchRes = fetch(
+                `${url}auth/login/`,
+                options);
+            fetchRes.then(res =>
+                res.json()).then(d => {
+                    console.log(d);
+                    console.log(d.token);
+                    window.localStorage.setItem('auth_token', d.token);
+                })
+        }
+
+        function logout() {
+            data = window.localStorage.getItem('auth_token');
+
+            console.log(data);
+
+            let options = {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Token ${data}`
+                }
+            }
+
+            let fetchRes = fetch(
+                `${url}auth/logout/`,
+                options);
+
+            fetchRes.then(res =>
+                res.json()).then(d => {
+                    console.log(d)
+                })
+        }
+
+        function getrequest() {
+
+            data = window.localStorage.getItem('auth_token');
+
+            console.log(data);
+
+            let options = {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Token ${data}`
+                }
+            }
+
+            let fetchRes = fetch(
+                `${url}auth/`,
+                options);
+
+            fetchRes.then(res =>
+                res.json()).then(d => {
+                    console.log(d);
+                })
+        }
+
+        function choosecourse() {
+
+            data = window.localStorage.getItem('auth_token');
+
+            console.log(data);
+
+            let options = {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Token ${data}`
+                }
+            }
+
+            let fetchRes = fetch(
+                `${url}courses/`,
+                options);
+
+            fetchRes.then(res =>
+                res.json()).then(d => {
+                    console.log(d);
+                })
+        }
+
+        function choosemodule() {
+
+            data = window.localStorage.getItem('auth_token');
+
+            console.log(data);
+
+            let options = {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Token ${data}`
+                }
+            }
+
+            let fetchRes = fetch(
+                `${url}courses/?id=${document.getElementById("module").value}`,
+                options);
+
+            fetchRes.then(res =>
+                res.json()).then(d => {
+                    console.log(d);
+                })
+        }
+    </script>
+</body>
+</html>

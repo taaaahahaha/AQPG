@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script src="https://unpkg.com/axios@0.24.0/dist/axios.min.js"></script>
+
+</head>
+<body>
+    <h1>POST a Question</h1>
+    
+    <input type="text" id="questionInput" placeholder="Enter your question" aria-label="Enter your question"
+        aria-describedby="button-addon2">
+    <input id="answerInput" type="text" placeholder="Enter your answer" aria-label="Enter your answer"
+        aria-describedby="button-addon2">
+    <input type="file" id="inputGroupFile" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
+    <button type="button" onclick="postAQuestion()">POST</button>
+
+
+    <script>
+
+        /// Dont forget to add axois script (refer head) 
+        
+        const url = "http://127.0.0.1:8000/"
+
+
+        function postAQuestion() {
+
+
+            token = window.localStorage.getItem('auth_token');
+            let fileElement = document.getElementById('inputGroupFile');
+            
+            // check if user had selected a file
+            if (fileElement.files.length === 0) {
+                alert('please choose a file')
+                return
+            }
+
+            let file = fileElement.files[0]
+
+            let formData = new FormData();
+            formData.set('file', file);
+            
+            const headers = {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                /// 'Authorization': `Token ${token}`
+              }
+            // import js script for using axios
+            axios.post("http://127.0.0.1:8000/upload/", formData, {
+                onUploadProgress: progressEvent => {
+                    const percentCompleted = Math.round(
+                        (progressEvent.loaded * 100) / progressEvent.total
+                    );
+                    console.log(`upload process: ${percentCompleted}%`);
+                },headers:headers
+            })
+                .then(res => {
+                    console.log(res.data);
+                    
+                    data = {
+                        "question": document.getElementById("questionInput").value,
+                        "answer": document.getElementById("answerInput").value,
+                        "file_slug": res.data['slug'],
+                    }
+                    
+                    let options = {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            /// 'Authorization': `Token ${token}`
+                        },
+                        body: JSON.stringify(data)
+                    }
+
+                    let fetchRes = fetch(
+                        `${url}/`,
+                        options);
+                    fetchRes.then(res =>
+                        res.json()).then(d => {
+                            console.log(d);
+                        })
+                })
+
+        }
+
+    </script>
+
+</body>
+</html>
